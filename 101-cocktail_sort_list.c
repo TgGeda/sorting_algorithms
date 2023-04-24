@@ -30,38 +30,60 @@ listint_t *swap_node(listint_t *node, listint_t **list)
  */
 void cocktail_sort_list(listint_t **list)
 {
-	listint_t *node;
-	int swap_done = 1;
+    listint_t *left = *list, *right = NULL, *current = NULL;
+    int swapped = 1;
 
-	if (list == '\0' || (*list) == '\0' || (*list)->next == '\0')
-		return;
-	node = *list;
-	while (swap_done == 1)
-	{
-		swap_done = 0;
-		while (node->next)
-		{
-			if (node->n > node->next->n)
-			{
-				node = swap_node(node->next, list);
-				swap_done = 1;
-				print_list(*list);
-			}
-			node = node->next;
-		}
-		if (swap_done == 0)
-			break;
-		swap_done = 0;
-		while (node->prev)
-		{
-			if (node->n < node->prev->n)
-			{
-				node = swap_node(node, list);
-				swap_done = 1;
-				print_list(*list);
-			}
-			else
-				node = node->prev;
-		}
-	}
+    if (list == NULL || *list == NULL || (*list)->next == NULL)
+        return;
+
+    while (swapped)
+    {
+        swapped = 0;
+        while (left->next != right)
+        {
+            if (left->n > left->next->n)
+            {
+                current = left->next;
+                if (left->prev != NULL)
+                    left->prev->next = current;
+                else
+                    *list = current;
+                current->prev = left->prev;
+                left->prev = current;
+                left->next = current->next;
+                if (current->next != NULL)
+                    current->next->prev = left;
+                current->next = left;
+                left = current;
+                swapped = 1;
+                print_list(*list);
+            }
+            else
+                left = left->next;
+        }
+        right = left;
+        while (right->prev != NULL)
+        {
+            if (right->n < right->prev->n)
+            {
+                current = right->prev;
+                if (right->next != NULL)
+                    right->next->prev = current;
+                current->next = right->next;
+                right->prev = current->prev;
+                if (current->prev != NULL)
+                    current->prev->next = right;
+                else
+                    *list = right;
+                right->next = current;
+                current->prev = right;
+                right = current;
+                swapped = 1;
+                print_list(*list);
+            }
+            else
+                right = right->prev;
+        }
+        left = right;
+    }
 }
